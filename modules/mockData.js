@@ -3,7 +3,8 @@ export const mockData = {
     users: [
         { id: 1, username: 'admin', role: 'מנהל', password: 'admin123', phone: '050-1234567' },
         { id: 2, username: 'operator1', role: 'מפעיל רגיל', password: 'pass123', phone: '052-7654321' },
-        { id: 3, username: 'operator2', role: 'מפעיל רגיל', password: 'pass456', phone: '054-9876543' }
+        { id: 3, username: 'operator2', role: 'מפעיל רגיל', password: 'pass456', phone: '054-9876543' },
+        { id: 4, username: 'Beit-Shemesh-Management', role: 'מנהל', password: 'mioq4QyxIZQy', phone: '050-0000000' }
     ],
     
     alertAreas: [

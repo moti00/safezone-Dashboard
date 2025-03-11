@@ -1,4 +1,5 @@
 import firebaseConfig from '../firebase-config.js';
+import { mockData } from './mockData.js';
 
 // Initialize Firebase
 if (!firebase.apps?.length) {
@@ -35,17 +36,30 @@ export function initializeAuth() {
         
         loginError.textContent = '';
         
-        // Use Firebase auth to sign in
+        // Try Firebase auth first
         firebase.auth().signInWithEmailAndPassword(email, password)
             .then(() => {
-                // Login successful
+                // Firebase login successful
+                console.log("Firebase login successful for user:", username);
                 loginContainer.classList.add('hidden');
                 appContainer.classList.remove('hidden');
             })
             .catch((error) => {
-                // Show error message
-                console.error("Login error:", error);
-                loginError.textContent = 'שם משתמש או סיסמה לא נכונים';
+                console.log("Firebase login failed, trying mock data:", error.code);
+                
+                // If Firebase auth fails, check if the user exists in mockData
+                const user = mockData.users.find(u => u.username === username && u.password === password);
+                
+                if (user) {
+                    // Mock login successful
+                    console.log("Mock login successful for user:", username);
+                    loginContainer.classList.add('hidden');
+                    appContainer.classList.remove('hidden');
+                } else {
+                    // Show error message
+                    console.error("Login error: User not found in Firebase or mock data");
+                    loginError.textContent = 'שם משתמש או סיסמה לא נכונים';
+                }
             });
     });
     

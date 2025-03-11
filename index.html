@@ -27,6 +27,7 @@
       content="מערכת ניהול אירועים מתקדמת להגנה ובטיחות"
     />
     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
@@ -34,20 +35,20 @@
     <meta name="apple-mobile-web-app-title" content="מערכת ניהול" />
 
     <!-- PWA icons and manifest -->
-    <link rel="manifest" href="/manifest.json" />
+    <link rel="manifest" href="./manifest.json" />
     <link
       rel="icon"
       type="image/png"
       sizes="192x192"
-      href="/icons/icon-192x192.png"
+      href="./icons/icon-192x192.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="512x512"
-      href="/icons/icon-512x512.png"
+      href="./icons/icon-512x512.png"
     />
-    <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+    <link rel="apple-touch-icon" href="./icons/icon-192x192.png" />
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -57,7 +58,7 @@
     <div id="login-container" class="container">
       <div class="login-form">
         <div class="welcome-section">
-          <img src="/icon.png" alt="דמות מערכת" width="300" />
+          <img src="./icon.png" alt="דמות מערכת" width="300" />
           <h2>ברוכים הבאים למערכת הניהול</h2>
           <p>מערכת ניהול אירועים מתקדמת להגנה ובטיחות</p>
         </div>
@@ -525,20 +526,20 @@
         </div>
       </div>
     </div>
+    <script>
+      // Register service worker for PWA functionality
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("./sw.js")
+            .then((reg) =>
+              console.log("Service Worker registered with scope:", reg.scope)
+            )
+            .catch((err) =>
+              console.error("Service Worker registration failed:", err)
+            );
+        });
+      }
+    </script>
   </body>
-  <script>
-    // Register service worker for PWA functionality
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker
-          .register("/sw.js")
-          .then((reg) =>
-            console.log("Service Worker registered with scope:", reg.scope)
-          )
-          .catch((err) =>
-            console.error("Service Worker registration failed:", err)
-          );
-      });
-    }
-  </script>
 </html>
