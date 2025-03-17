@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isSystemAdmin() {
+      return isSignedIn() && request.auth.token.role == 'system-admin';
+    }
+    
+    function isCustomerAdmin() {
+      return isSignedIn() && request.auth.token.role == 'customer-admin';
+    }
+    
+    function isOperatorAdmin() {
+      return isSignedIn() && request.auth.token.role == 'admin';
+    }
+    
+    function isOperatorViewer() {
+      return isSignedIn() && request.auth.token.role == 'viewer';
+    }
+    
+    function getUserCustomerId() {
+      return request.auth.token.customerId;
+    }
+    
+    function belongsToCustomer(customerId) {
+      return isSignedIn() && getUserCustomerId() == customerId;
+    }
+    
+    function hasAccessToAlertArea(customerId, alertAreaId) {
+      // Check if user has access to this specific alert area
+      // This would need to be implemented based on how you store operator permissions
+      return belongsToCustomer(customerId);
+    }
+    
+    // System admin has full access to everything
+    match /{document=**} {
+      allow read, write: if isSystemAdmin();
+    }
+    
+    // Customers collection
+    match /customers/{customerId} {
+      // Customer document can be read by any user belonging to that customer
+      allow read: if belongsToCustomer(customerId);
+      // Only system admin can create/update/delete customer documents
+      allow create, update, delete: if isSystemAdmin();
+      
+      // Operators subcollection
+      match /operators/{operatorId} {
+        // Operators can be read by any user belonging to the same customer
+        allow read: if belongsToCustomer(customerId);
+        // Customer admin can manage operators for their customer
+        allow create, update, delete: if isCustomerAdmin() && belongsToCustomer(customerId);
+      }
+      
+      // Alert Areas subcollection
+      match /alertAreas/{alertAreaId} {
+        // Alert areas can be read by any user belonging to the customer
+        allow read: if belongsToCustomer(customerId);
+        // Customer admin can manage all alert areas for their customer
+        allow create, update, delete: if isCustomerAdmin() && belongsToCustomer(customerId);
+        // Operator admin can manage alert areas if they have permission
+        allow create, update, delete: if isOperatorAdmin() && belongsToCustomer(customerId) && hasAccessToAlertArea(customerId, alertAreaId);
+        
+        // Alerts subcollection
+        match /alerts/{alertId} {
+          // Alerts can be read by any user with access to the alert area
+          allow read: if belongsToCustomer(customerId) && hasAccessToAlertArea(customerId, alertAreaId);
+          // Customer admin and operator admin can create/update alerts
+          allow create, update: if (isCustomerAdmin() || isOperatorAdmin()) && belongsToCustomer(customerId) && hasAccessToAlertArea(customerId, alertAreaId);
+          // Only customer admin can delete alerts
+          allow delete: if isCustomerAdmin() && belongsToCustomer(customerId);
+          
+          // Reports subcollection
+          match /reports/{reportId} {
+            // Reports can be read by any user with access to the alert
+            allow read: if belongsToCustomer(customerId) && hasAccessToAlertArea(customerId, alertAreaId);
+            // Reports are created by mobile app users, so we need a separate rule for them
+            // For now, allow any authenticated user to create reports
+            allow create: if isSignedIn();
+            // Only customer admin can update or delete reports
+            allow update, delete: if isCustomerAdmin() && belongsToCustomer(customerId);
+          }
+        }
+      }
+    }
+  }
+}

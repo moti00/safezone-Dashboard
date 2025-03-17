@@ -4,16 +4,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>מערכת ניהול אירועים</title>
     <link rel="stylesheet" href="styles.css" />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css"
-    />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
     <script type="module" src="app.js"></script>
     <link
       rel="stylesheet"
@@ -53,6 +43,8 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
   </head>
   <body>
     <div id="login-container" class="container">
@@ -93,13 +85,7 @@
     <div id="app-container" class="hidden">
       <aside class="sidebar">
         <div class="logo-small">
-          <svg width="40" height="40" viewBox="0 0 80 80">
-            <circle cx="40" cy="40" r="35" fill="#e53e3e" />
-            <path
-              d="M25 35 L40 55 L55 35 L45 35 L45 25 L35 25 L35 35 Z"
-              fill="white"
-            />
-          </svg>
+          <svg width="40" height="40" viewBox="0 0 80 80"></svg>
           <h2>מערכת ניהול</h2>
         </div>
         <nav>
@@ -171,28 +157,10 @@
         <!-- Dashboard Page -->
         <section id="dashboard-page" class="page active">
           <div class="page-header">
-            <h1>לוח בקרה - מפת אירוע</h1>
+            <h1>לוח בקרה</h1>
           </div>
-          <div id="map-container-wrapper">
-            <div id="map-container"></div>
-          </div>
-          <div class="map-legend">
-            <div class="legend-item">
-              <span class="status-dot status-red"></span>
-              <span>אני בסכנה</span>
-            </div>
-            <div class="legend-item">
-              <span class="status-dot status-yellow"></span>
-              <span>אני באזור מסוכן אבל אני בסדר</span>
-            </div>
-            <div class="legend-item">
-              <span class="status-dot status-green"></span>
-              <span>אני באזור בטוח</span>
-            </div>
-            <div class="legend-item">
-              <span class="status-dot status-gray"></span>
-              <span>לא הגיב עדיין</span>
-            </div>
+          <div class="dashboard-content">
+            <p>ברוכים הבאים ללוח הבקרה של מערכת ניהול האירועים</p>
           </div>
         </section>
 
@@ -389,6 +357,13 @@
             <div class="form-group">
               <label for="new-phone">טלפון</label>
               <input type="tel" id="new-phone" name="phone" />
+            </div>
+            <div class="form-group">
+              <label for="new-role">תפקיד</label>
+              <select id="new-role" name="role" required>
+                <option value="admin">מפעיל מנהל</option>
+                <option value="viewer">מפעיל צופה</option>
+              </select>
             </div>
             <div class="form-group">
               <label for="generated-password">סיסמה</label>
